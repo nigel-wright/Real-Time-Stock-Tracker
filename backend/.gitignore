@@ -1,0 +1,48 @@
+# Maven target directory
+/target/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env
+
+# Application secrets (optional)
+application-dev.properties
+application-prod.properties
+application-test.properties
+
+# AWS credentials or secrets if any
+.aws/
+
+# Java-specific
+*.class
+
+# Build files
+/build/
+
+# Spring Boot devtools cache
+.spring-boot-devtools.properties
+
+# VS Code
+.vscode/
+
+# Test output
+/test-output/
