@@ -1,4 +1,6 @@
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/EquityplatformApplication.java
+/Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/config/SecurityConfig.java
+/Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/controller/LoginController.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/controller/UserController.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/model/Alert.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/model/Login.java
@@ -6,6 +8,8 @@
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/model/StockPrice.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/model/User.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/model/Watchlist.java
+/Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/repository/LoginRepository.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/repository/LoginRepositoryImpl.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/repository/UserRepository.java
 /Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/repository/UserRepositoryImpl.java
+/Users/nigelwright/Coding-Files/Java/Equities-Platform/backend/src/main/java/com/equities/equityplatform/util/PasswordUtil.java

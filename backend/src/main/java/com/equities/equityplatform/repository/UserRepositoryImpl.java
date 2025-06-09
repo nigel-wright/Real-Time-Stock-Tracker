@@ -1,6 +1,7 @@
 package com.equities.equityplatform.repository;
 
 import com.equities.equityplatform.model.User;
+import com.equities.equityplatform.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,35 +17,13 @@ public class UserRepositoryImpl implements UserRepository{
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void insertUser(User user) {
-        String query = "INSERT INTO users (username, email, full_name) VALUES (?, ?, ?);";
-        jdbcTemplate.update(query, user.getUsername(), user.getEmail(), user.getFullName());
+    public void registerUser(User user) {
+        String userSql = "INSERT INTO users (username, email, full_name) VALUES (?, ?, ?) RETURNING user_id;";
+        Integer userId = jdbcTemplate.queryForObject(userSql, Integer.class, user.getUsername(), user.getEmail(), user.getFullName());
+
+        String hashedPassword = PasswordUtil.hashPassword(user.getLogin().getPasswordHash());
+
+        String loginSql = "INSERT INTO logins (user_id, password) VALUES (?, ?);";
+        jdbcTemplate.update(loginSql, userId, hashedPassword);
     }
-
-    /*
-    @Override
-    public User findByUsername(String username) {
-        String query = "SELECT * FROM users WHERE username = ?;";
-        jdbcTemplate.queryForObject(query, new Object[]{username}, new BeanPropertyRowMapper<>(User.class));
-    }
-
-    @Override
-    public List<User> findAll() {
-        String query = "SELECT * FROM users;";
-        jdbcTemplate.query(query, new BeanPropertyRowMapper<>(User.class));
-    }
-
-    @Override
-    public void updateUser(User user) {
-
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        String sql = "DELETE FROM users WHERE username = ?";
-
-        User[] user = new User[] {username};
-        jdbcTemplate.update(sql, user);
-    }
-     */
 }

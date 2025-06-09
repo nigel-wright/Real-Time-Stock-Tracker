@@ -7,6 +7,7 @@ public class User {
     private String email;
     private String fullName;
     private String dateCreated;
+    private Login login;
 
     // Setters
     public void setUserName(String username) {
@@ -32,6 +33,10 @@ public class User {
 
     public String getFullName() {
         return this.fullName;
+    }
+
+    public Login getLogin() {
+        return this.login;
     }
 
 }

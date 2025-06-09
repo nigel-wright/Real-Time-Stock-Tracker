@@ -14,9 +14,9 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/sign-up")
     public String addStock(@RequestBody User user) {
-        userRepository.insertUser(user);
-        return "User inserted";
+        userRepository.registerUser(user);
+        return "User has signed up!";
     }
 }
