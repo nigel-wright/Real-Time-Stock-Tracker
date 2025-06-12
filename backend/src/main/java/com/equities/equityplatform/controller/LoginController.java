@@ -3,6 +3,8 @@ package com.equities.equityplatform.controller;
 import com.equities.equityplatform.repository.LoginRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/login")
 public class LoginController {
@@ -20,8 +22,10 @@ public class LoginController {
     }
 
     @PostMapping("/change-password")
-    public String changePassword(@RequestBody String identifier, String password) {
-        loginRepository.changePassword(identifier, password);
+    public String changePassword(@RequestBody Map<String, String> map) {
+        System.out.println("ID is " + map.get("username"));
+        System.out.println("Password is " + map.get("passwordHash"));
+        loginRepository.changePassword(map.get("username"), map.get("passwordHash"));
         return "Changing the password was successful!";
     }
 }
