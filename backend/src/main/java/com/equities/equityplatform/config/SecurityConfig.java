@@ -11,9 +11,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // ✅ new lambda-style config
+                .csrf(csrf -> csrf.disable()) // new lambda-style config
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll() // ✅ match all paths
+                        .requestMatchers("/**").permitAll() // match all paths
                         .anyRequest().authenticated()
                 )
                 .build();
