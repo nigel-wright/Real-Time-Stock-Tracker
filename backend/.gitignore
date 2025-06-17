@@ -1,48 +1,101 @@
 # Maven target directory
 /target/
+/build/
+/out/
 
 # Logs
 *.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Temporary files
 *.tmp
 *.swp
 *.bak
+*.swo
+*~
 
-# IntelliJ IDEA
+# IDE files
 .idea/
 *.iml
 *.ipr
 *.iws
-out/
+.vscode/
+*.sublime-workspace
+*.sublime-project
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Environment files
 .env
 *.env
+.env.*
+!.env.example
 
-# Application secrets (optional)
+# Application secrets
 application-dev.properties
 application-prod.properties
 application-test.properties
+application-local.properties
+application.properties
 
-# AWS credentials or secrets if any
+# AWS credentials
 .aws/
+aws.json
+aws-credentials.json
 
-# Java-specific
+# Java specific
 *.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
 
-# Build files
-/build/
-
-# Spring Boot devtools cache
+# Spring Boot
 .spring-boot-devtools.properties
+.spring-boot-devtools.restart.trigger
 
-# VS Code
-.vscode/
+# Node (if any frontend)
+node_modules/
+dist/
+coverage/
+.next/
+.nuxt/
+.cache/
 
 # Test output
 /test-output/
+/coverage/
+/reports/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
