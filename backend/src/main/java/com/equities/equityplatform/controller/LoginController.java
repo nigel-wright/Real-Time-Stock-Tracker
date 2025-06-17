@@ -23,8 +23,10 @@ public class LoginController {
 
     @PostMapping("/change-password")
     public String changePassword(@RequestBody Map<String, String> map) {
+        
         System.out.println("ID is " + map.get("username"));
         System.out.println("Password is " + map.get("passwordHash"));
+
         loginRepository.changePassword(map.get("username"), map.get("passwordHash"));
         return "Changing the password was successful!";
     }
