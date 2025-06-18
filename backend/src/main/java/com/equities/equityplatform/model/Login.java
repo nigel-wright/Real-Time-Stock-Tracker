@@ -15,14 +15,13 @@ public class Login {
 
     public Login(int userId, String passwordHash) {
         this.userId = userId;
-        this.passwordHash = passwordHash;
+        this.passwordHash = PasswordUtil.hashPassword(passwordHash);
     }
 
     // Getters and Setters
     public int getLoginId() {
         return loginId;
     }
-
     public void setLoginId(int loginId) {
         this.loginId = loginId;
     }
@@ -30,7 +29,6 @@ public class Login {
     public int getUserId() {
         return userId;
     }
-
     public void setUserId(int userId) {
         this.userId = userId;
     }
@@ -38,8 +36,7 @@ public class Login {
     public String getPasswordHash() {
         return passwordHash;
     }
-
     public void setPasswordHash(String passwordHash) {
-        this.passwordHash = PasswordUtil.hashPassword(passwordHash);
+        this.passwordHash = passwordHash;
     }
 }

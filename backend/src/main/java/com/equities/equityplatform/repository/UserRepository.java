@@ -4,5 +4,5 @@ import com.equities.equityplatform.model.User;
 import java.util.List;
 
 public interface UserRepository {
-    void registerUser(User user);
+    Integer registerUser(User user);
 }
