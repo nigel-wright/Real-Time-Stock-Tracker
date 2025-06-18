@@ -1,64 +1,64 @@
 package com.equities.equityplatform.util;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.security.Key;
-
-import com.equities.equityplatform.service.MyService;
-import io.jsonwebtoken.*;
-
 import java.util.Date;
-
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthUtil {
 
-    // Initialize local variables and objects
-    static MyService service;
-    public static long ttlMillis =  60 * 60 * 1000;
-    public static SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    private static final Logger log = LoggerFactory.getLogger(AuthUtil.class);
+    private static final String JWT_SECRET = System.getenv("JWT_SECRET");
+    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
-    // Used to generate signing key
-    private static Key getSigningKey() {
-        byte[] keyBytes = service.getSecretKey().getBytes(StandardCharsets.UTF_8);
-        return new SecretKeySpec(keyBytes,signatureAlgorithm.getJcaName());
-    }
-
-    //Sample method to construct a JWT
-    public static String createJWT(String id, String subject) {
-
-        long currMillis = System.currentTimeMillis();
-        Date now = new Date(currMillis);
-
-        // Set the JWT Claims
-        JwtBuilder builder = Jwts.builder().setId(id)
-                .setIssuedAt(now)
-                .setSubject(subject)
-                .setIssuer("backend")
-                .signWith(getSigningKey(), signatureAlgorithm);
-
-        // If specified, add the expiration
-        if (ttlMillis >= 0) {
-            Date exp = new Date(currMillis + ttlMillis);
-            builder.setExpiration(exp);
+    public String createJWT(String username, String role) {
+        if (JWT_SECRET == null || JWT_SECRET.trim().isEmpty()) {
+            log.error("JWT_SECRET environment variable is not set");
+            throw new RuntimeException("JWT configuration error");
         }
 
-        // Build JWT and serializes to URL-safe string
-        return builder.compact();
+        try {
+            return Jwts.builder()
+                    .setSubject(username)
+                    .claim("role", role)
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                    .signWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()), SignatureAlgorithm.HS256)
+                    .compact();
+        } catch (Exception e) {
+            log.error("Error creating JWT token: {}", e.getMessage());
+            throw new RuntimeException("Failed to create authentication token");
+        }
     }
 
-    public static Claims decodeJWT(String jwt) {
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            log.error("Error validating JWT token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public String getUsernameFromToken(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+                    .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
                     .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-        } catch (JwtException e) {
-            System.out.println("JWT is invalid or expired: " + e.getMessage());
-            return null;
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (Exception e) {
+            log.error("Error extracting username from token: {}", e.getMessage());
+            throw new RuntimeException("Invalid token");
         }
     }
 }
