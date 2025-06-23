@@ -49,8 +49,8 @@ public class StockController {
         }
 
         // Fetch and check the data from the endpoint
-        String data = polygonService.getStockData(ticker, startDate, endDate, interval);
-        if (data.isEmpty() || data.isBlank()) {
+        String stockData = polygonService.getStockData(ticker, startDate, endDate, interval);
+        if (stockData.isEmpty() || stockData.isBlank()) {
             return ResponseEntity
                     .internalServerError()
                     .body(Map.of("status",500,"message","Failed to fetch stock data")
@@ -58,11 +58,11 @@ public class StockController {
         }
 
         // Declare the list and transform data
-        List<Map<String, Object>> dataList;
+        List<Map<String, Object>> stockList;
         try {
-            dataList = objectMapper.convertValue(
+            stockList = objectMapper.convertValue(
                     // readTree gives you a JsonNode
-                    objectMapper.readTree(data).get("results"),
+                    objectMapper.readTree(stockData).get("results"),
                     new TypeReference<>() {}
             );
 
@@ -74,7 +74,7 @@ public class StockController {
                     );
         }
 
-        if (dataList.isEmpty()) {
+        if (stockList.isEmpty()) {
             return ResponseEntity
                     .status(204)
                     .body(Map.of("status", 204, "message", "NO data availbale")
@@ -85,22 +85,56 @@ public class StockController {
                 Map.of(
                     "status", 200, 
                     "message", "Success!",
-                    "data", dataList,
-                        "count", dataList.size()
+                    "data", stockList,
+                        "count", stockList.size()
                 )
             );
     }
 
-//    @GetMapping("/stocks/related/{Ticker}")
-//    public Mono<ResponseEntity<Object>> getRelatedStock(@RequestParam String ticker) {
-//        if (ticker.isEmpty()) {
-//            return Mono.just(ResponseEntity
-//                            .badRequest()
-//                            .body(Map.of("status", 400, "message", "Cannot be null ticker input!")
-//                            ));
-//        }
-//
-//
-//        return Mono.just();
-//    }
+    @GetMapping("/ticker/related/{ticker}")
+    public Mono<ResponseEntity<Map<String, Object>>> getRelatedStock(@PathVariable String ticker) {
+        System.out.println("Ticker is: " + ticker);
+        if (ticker.isEmpty()) {
+            return Mono.just(ResponseEntity
+                            .badRequest()
+                            .body(Map.of("status", 400, "message", "Cannot be null ticker input!")
+                            ));
+        }
+
+        // List to store the related stocks
+        List<Map<String, Object>> relatedList;
+        try {
+            String relatedData = polygonService.getRelatedStock(ticker);
+
+            // Map the data to a list of maps object
+            relatedList = objectMapper.convertValue(
+                    objectMapper.readTree(relatedData).get("results"),
+                    new TypeReference<List<Map<String, Object>>>() {}
+            );
+        } catch(Exception e) {
+            return Mono.just(ResponseEntity
+                    .internalServerError()
+                    .body(Map.of("status", 500, "message", "Error when fetcing related stocks!"))
+            );
+        }
+
+        // Conditional check for successful request but null data
+        if (relatedList.isEmpty()) {
+            return Mono.just(ResponseEntity
+                    .status(204)
+                    .body(Map.of("status", 204, "message", "NO data available"))
+            );
+        }
+
+        // Return the related ticker and count
+        return Mono.just(ResponseEntity
+                .ok()
+                .body(
+                        Map.of("status", 200,
+                                "message", "Successfully got related stocks!",
+                                "data", relatedList,
+                                "count", relatedList.size())
+                        )
+        );
+    }
 }

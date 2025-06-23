@@ -3,6 +3,7 @@ package com.equities.equityplatform.service;
 import jep.SubInterpreter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -63,7 +64,7 @@ public class PolygonService {
                              String end_date,
                              String interval) {
         try {
-            System.out.println("=== PolygonService.callFetch called ===");
+            System.out.println("=== PolygonService.getStockData called ===");
 
             // Check for "End Date"
             String endDate = (end_date == null) ? LocalDate.now().toString() : end_date;
@@ -86,7 +87,33 @@ public class PolygonService {
                     })
                     .block();
         } catch (Exception e) {
-            throw new RuntimeException("Unexpected error during Python execution", e);
+            throw new RuntimeException("Unexpected error during stock data fetch!", e);
+        }
+    }
+
+    public String getRelatedStock(String ticker) {
+        try {
+            System.out.println("=== PolygonService.getRelatedStock called ===");
+
+            String uri = String.format("/v1/related-companies/%s?apiKey=%s", ticker, apiKey);
+
+            System.out.println("URI is: " + uri);
+
+            return webClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .doOnSuccess(response -> {
+                        System.out.println("SUCCESS: Fetched Related Stock Data!");
+                        System.out.println("Response length: " + (response != null ? response.length() : 0));
+                    })
+                    .doOnError(error -> {
+                        System.err.println("Error: " + error.getMessage());
+                        System.err.println("Attempted URL: " + baseUrl + uri);
+                    })
+                    .block();
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error during related stock fetch!");
         }
     }
 }
