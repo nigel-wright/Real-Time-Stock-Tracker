@@ -2,7 +2,8 @@ package com.equities.equityplatform.repository;
 
 import com.equities.equityplatform.model.User;
 import java.util.List;
+import java.util.Map;
 
 public interface UserRepository {
-    void registerUser(User user);
+    Integer registerUser(Map<String, String> user_info);
 }

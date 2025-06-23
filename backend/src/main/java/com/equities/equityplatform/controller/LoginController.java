@@ -1,6 +1,8 @@
 package com.equities.equityplatform.controller;
 
 import com.equities.equityplatform.repository.LoginRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,9 +18,30 @@ public class LoginController {
     }
 
     @PostMapping("/sign-in")
-    public String signIn(@RequestBody String identifier, String password) {
-        loginRepository.userLogin(identifier, password);
-        return "Login was successful!";
+    public ResponseEntity<Map<String, Object>> signIn(@RequestBody Map<String, String> map) {
+        String identifier = "";
+        String password = !(map.get("password") == null) ? map.get("password") : "";
+
+        if (!(map.get("username") == null)) {
+            identifier = map.get("username");
+        } else if (!(map.get("email") == null)) {
+            identifier = map.get("email");
+        }
+
+        String jwtToken = loginRepository.userLogin(identifier, password);
+
+        if (jwtToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("status", 401, "Failed to sign in!", "Invalid credentials"));
+        }
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", 200,
+                        "message", "Success, token was generated and the user signed in!",
+                        "token",  jwtToken
+                )
+        );
     }
 
     @PostMapping("/change-password")

@@ -22,6 +22,10 @@ public class User {
         this.fullName = fullName;
     }
 
+    public void setLogin(Login login) {
+        this.login = login;
+    }
+
     // Getters
     public String getUsername() {
         return this.username;
