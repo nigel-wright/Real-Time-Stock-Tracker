@@ -19,18 +19,27 @@ public class UserRepositoryImpl implements UserRepository{
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public int registerUser(Map<String, String> map) {
+    public Integer registerUser(Map<String, String> map) {
         try {
-            if (map.get("username") && map.get("email") == null || map.get("full_name") == null || map.get("password")) {
-                throw new IllegalArgumentException("Missing required register fields!");
+            String userSql = """
+                INSERT INTO users (username, email, full_name)
+                VALUES (?, ?, ?)
+                RETURNING user_id;
+               """;
+
+            String username = map.get("username");
+            String email = map.get("email");
+            String fullName = map.get("full_name");
+
+            if (username.isEmpty() || email.isEmpty() || fullName.isEmpty()) {
+                System.out.println("The user could not be registered!");
+                return 0;
             }
 
-            String userSql = "INSERT INTO users (username, email, full_name) VALUES (?, ?, ?) RETURNING user_id;";
-
-            int userId = jdbcTemplate.queryForObject(
+            Integer userId = jdbcTemplate.queryForObject(
                     userSql,
                     Integer.class,
-                    new Object[]{map.get("username"), map.get("email"), map.get("full_name")
+                    new Object[]{username, email, fullName}
             );
 
             if (userId == null) {
@@ -41,10 +50,10 @@ public class UserRepositoryImpl implements UserRepository{
             String hashedPassword = PasswordUtil.hashPassword(map.get("password"));
             String loginSql = "INSERT INTO logins (user_id, password) VALUES (?, ?);";
             jdbcTemplate.update(loginSql, userId, hashedPassword);
-            return userId;
 
+            return userId;
         } catch (Exception ex) {
-            System.out.println("There was an issue registering the user: " + ex.message());
+            System.out.println("There was an issue registering the user: " + ex.getMessage());
             return 0;
         }
     }

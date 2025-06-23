@@ -80,6 +80,11 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
@@ -150,6 +155,25 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver-dns-native-macos</artifactId>
+			<version>4.1.121.Final</version>
+			<classifier>osx-aarch_64</classifier>
+		</dependency>
+
+		<!-- JEP (for python activation in Java runtime) -->
+		<dependency>
+  			<groupId>black.ninia</groupId>
+  			<artifactId>jep</artifactId>
+  			<version>4.2.2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -157,6 +181,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>
+						-Djava.library.path=${project.basedir}/src/main/python/.venv/lib/python3.12/site-packages/jep
+					</jvmArguments>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

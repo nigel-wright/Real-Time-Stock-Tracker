@@ -1,10 +1,10 @@
 package com.equities.equityplatform.repository;
 
 import com.equities.equityplatform.model.Login;
-import com.equities.equityplatform.service.MyService;
 import com.equities.equityplatform.util.AuthUtil;
 import com.equities.equityplatform.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,23 +22,30 @@ public class LoginRepositoryImpl implements LoginRepository{
     @Override
     public String userLogin(String identifier, String password) {
         String sql = """
-            SELECT l.password, l.login_id
+            SELECT l.login_id, l.password
             FROM logins l
-            JOIN users u ON l.used_id = u.user_id
+            JOIN users u ON u.user_id = l.user_id
             WHERE u.username = ? or u.email = ?
             """;
-        try {
-            // Fetch login data from DB
-            Login login = jdbcTemplate.queryForObject(sql, Object.class, new Object[]{identifier, identifier});
 
-            if (login != null && PasswordUtil.verifyPassword(login.getPasswordHash(), password)) {
-                return AuthUtil.createJWT(login.getLoginId(), identifier);
+        try {
+            Map<String, Object> result = jdbcTemplate.queryForMap(sql, identifier, identifier);
+
+            if (PasswordUtil.verifyPassword(password, (String) result.get("password"))) {
+                String jwt = AuthUtil.createJWT((int) result.get("login_id"), identifier);
+
+                System.out.println("JWT TOKEN IS: " + jwt);
+                return jwt;
             } else {
-                return null;
+                System.out.println("Could not be verified!");
+                return "";
             }
+        } catch (EmptyResultDataAccessException ex) {
+            System.out.println("User not found: " + identifier);
+            return "";
         } catch (Exception ex) {
-            System.out.println("There was an issue login the user in.");
-            return null;
+            System.out.println("Error during login: " + ex.getMessage());
+            return "";
         }
     }
 
@@ -48,7 +55,7 @@ public class LoginRepositoryImpl implements LoginRepository{
         String sql = """
                 UPDATE logins
                 SET password = ?
-                WHERE user_id = (SELECT user
+                WHERE user_id = (SELECT user_id
                                  FROM users
                                  WHERE username = ? or email  = ?);
                 """;

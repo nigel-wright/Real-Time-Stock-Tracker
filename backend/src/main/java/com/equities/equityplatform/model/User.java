@@ -23,7 +23,7 @@ public class User {
     }
 
     public void setLogin(Login login) {
-        this.login = new Login(login.getUserId(), login.getPasswordHash());
+        this.login = login;
     }
 
     // Getters

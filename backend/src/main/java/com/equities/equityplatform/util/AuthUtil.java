@@ -1,6 +1,8 @@
 package com.equities.equityplatform.util;
 
 import java.util.Date;
+
+import com.equities.equityplatform.service.MyService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,9 +15,10 @@ public class AuthUtil {
 
     private static final Logger log = LoggerFactory.getLogger(AuthUtil.class);
     private static final String JWT_SECRET = System.getenv("JWT_SECRET");
+    //private static final String JWT_SECRET = service.getSecretKey();
     private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
-    public String createJWT(String username, String role) {
+    public static String createJWT(int loginID, String role) {
         if (JWT_SECRET == null || JWT_SECRET.trim().isEmpty()) {
             log.error("JWT_SECRET environment variable is not set");
             throw new RuntimeException("JWT configuration error");
@@ -23,7 +26,7 @@ public class AuthUtil {
 
         try {
             return Jwts.builder()
-                    .setSubject(username)
+                    .setSubject(String.valueOf(loginID))
                     .claim("role", role)
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
